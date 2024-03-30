@@ -1,6 +1,6 @@
 class AddStu():
     def __init__(self):
-        pass
+        self.student_dict = {}
 
     def execute(self):
         student_name = input("Please input a student's name or exit: ")
@@ -8,10 +8,8 @@ class AddStu():
         if student_name.lower() == 'exit':
             return {}
 
-        student_dict = {}
-
-        if student_name not in student_dict:
-            student_dict[student_name] = {}
+        if student_name not in self.student_dict:
+            self.student_dict[student_name] = {}
 
         while True:
             subject_name = input("  Please input a subject name or exit for ending: ")
@@ -19,7 +17,7 @@ class AddStu():
                 print(f"    Add {student_name}'s scores successfully.")
                 break
 
-            if subject_name in student_dict[student_name]:           
+            if subject_name in self.student_dict[student_name]:            
                 print(f"  {student_name} already has a score for {subject_name}.")
             else:
                 score_input = input(f"  Please input {student_name}'s {subject_name} score or < 0 for discarding the subject: ")
@@ -28,9 +26,9 @@ class AddStu():
                     if score < 0:
                         continue
                     else:
-                        student_dict[student_name][subject_name] = score
+                        self.student_dict[student_name][subject_name] = score
                         print(f"    Add {student_name}'s {subject_name} score: {score}")
                 except ValueError as e:
                     print(f"    Wrong format with reason: {e}, please try again.")
 
-        return {'name': student_name, 'scores': student_dict[student_name]}
+        return {'name': student_name, 'scores': self.student_dict[student_name]}
