@@ -29,29 +29,41 @@ class SocketClient:
             print(f"The client received data => {raw_data}")
             return keep_going, raw_data
 
+class StudentClientHandler:
+    def __init__(self, client):
+        self.client = client
+
+    def add_student(self):
+        parameters = AddStu().execute()
+        self.client.send_command('add', parameters)
+        return self.client.wait_response()[0]
+
+    def show_students(self):
+        self.client.send_command('show', {})
+        keep_going, response = self.client.wait_response()
+        PrintAll(response).execute()
+        return keep_going
+
+    def exit_program(self):
+        return False
+
+    def default_behavior(self):
+        print("Unknown selection.")
+        return True
+
 if __name__ == '__main__':
-    client = SocketClient(host, port)
-    keep_going = True
+    handler = StudentClientHandler(client)
+    actions = {
+        'add': handler.add_student,
+        'show': handler.show_students,
+        'exit': handler.exit_program,
+    }
 
-    while keep_going:
-        try:
-            command_type = input("\nadd: Add a student's name and score\nmodify: Modify a student's score\nexit: Exit\nPlease select: ")
-
-            if command_type == 'add':
-                parameters = AddStu().execute()  
-                client.send_command('add', parameters)
-                keep_going = client.wait_response()
-
-            elif command_type == 'show':
-                client.send_command('show', {})
-                keep_going, response = client.wait_response()
-                PrintAll(response).execute()  
-
-            elif command_type == 'exit':
+    try:
+        while True:
+            user_choice = input_choice()
+            keep_going = actions.get(user_choice, handler.default_behavior)()
+            if not keep_going:
                 break
-
-            else:
-                print("The selection isn't exist.")
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            continue
+    except Exception as e:
+        print(f"An error occurred: {e}")
