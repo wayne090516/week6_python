@@ -50,8 +50,13 @@ class StudentClientHandler:
     def default_behavior(self):
         print("Unknown selection.")
         return True
+        
+def input_choice():
+    choice=input("add: Add a student's name and score\nshow: Print all\nexit: Exit\nPlease select: ")
+    return choice
 
 if __name__ == '__main__':
+    client = SocketClient(host, port)
     handler = StudentClientHandler(client)
     actions = {
         'add': handler.add_student,
